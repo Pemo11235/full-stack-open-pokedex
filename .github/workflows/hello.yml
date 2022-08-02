@@ -1,0 +1,17 @@
+# The name of the workflow
+name: 'Hello world'
+
+# on , trigger event and where
+on:
+  push:
+    branches:
+      - master
+
+# jobs, every job has many steps
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Say Hello
+        run: |
+          echo 'Hello World!'
