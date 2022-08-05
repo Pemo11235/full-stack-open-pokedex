@@ -43,6 +43,22 @@ jobs:
           checkstring: "ok"
           delay: 5
           rollbackonhealthcheckfailed: true
+      - name: Test Success
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ success() }}
+        with:
+          severity: info
+          text: "Deployment successful"
+          details: to https://fso-deploy-heroku.herokuapp.com/ by ${{github.actor}}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Test Failed
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ failure() }}
+        with:
+          severity: error
+          text: "Deployment failed"
+          details: commit ${{join(github.event.commits.*.url)}} by ${{github.actor}} failed the deployment"
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
@@ -57,19 +73,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           DRY_RUN: false
-      - name: Test Success
-        uses: rjstone/discord-webhook-notify@v1
-        if: ${{success()}}
-        with:
-          severity: info
-          text: "Deployment successful"
-          details: to https://fso-deploy-heroku.herokuapp.com/ by ${{github.actor}}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Test Failed
-        uses: rjstone/discord-webhook-notify@v1
-        if: ${{failure()}}
-        with:
-          severity: error
-          text: "Deployment failed"
-          details: commit ${{join(github.event.commits.*.url)}} by ${{github.actor}} failed the deployment"
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
